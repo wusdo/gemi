@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemi — Kozmik Fantezi</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── TOP BAR ─────────────────────────────────────────────────────────── -->
+<div id="top-bar">
+  <div id="game-title">✦ GEMİ ✦</div>
+
+  <div id="resource-bar">
+    <div class="res-item">
+      <span class="res-icon">☀️</span>
+      <div class="res-info">
+        <span class="res-label">Güneş Tozu</span>
+        <span class="res-val" id="hud-sun-dust">0</span>
+      </div>
+    </div>
+    <div class="res-divider"></div>
+    <div class="res-item">
+      <span class="res-icon">⚡</span>
+      <div class="res-info">
+        <span class="res-label">Üretim</span>
+        <span class="res-val" id="hud-dps">0/s</span>
+      </div>
+    </div>
+    <div class="res-divider"></div>
+    <div class="res-item">
+      <span class="res-icon">💜</span>
+      <div class="res-info">
+        <span class="res-label">Anı Parçacığı</span>
+        <span class="res-val purple" id="hud-memory">0</span>
+      </div>
+    </div>
+    <div class="res-divider"></div>
+    <div class="res-item">
+      <span class="res-icon">🌌</span>
+      <div class="res-info">
+        <span class="res-label">Kozmik Öz</span>
+        <span class="res-val purple" id="hud-cosmic">0</span>
+      </div>
+    </div>
+    <div class="res-divider"></div>
+    <div class="res-item res-xp">
+      <div class="res-info">
+        <span class="res-label" id="hud-level">Lv.1</span>
+        <div class="hud-xp-track">
+          <div class="hud-xp-fill" id="hud-xp-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="top-actions">
+    <span id="kingdom-name-display"></span>
+    <button id="fool-btn" title="60s bekleme">🃏 Soytarı Kral</button>
+    <div id="fool-banner" class="fool-banner"></div>
+    <div class="top-divider"></div>
+    <button class="top-btn" id="quest-btn"       title="Görevler">🎯</button>
+    <button class="top-btn" id="chat-btn"        title="Global Sohbet">💬</button>
+    <button class="top-btn" id="leaderboard-btn" title="Sıralama">🏆</button>
+    <button class="top-btn" id="settings-btn"    title="Ayarlar">⚙️</button>
+  </div>
+
+  <div id="farm-resource-bar">
+    <div class="farm-res-item">
+      <span>🪵</span>
+      <span class="farm-res-val" id="hud-wood">0</span>
+      <span class="farm-res-cap" id="hud-wood-cap">/500</span>
+    </div>
+    <div class="farm-res-item">
+      <span>⛏️</span>
+      <span class="farm-res-val" id="hud-stone">0</span>
+      <span class="farm-res-cap" id="hud-stone-cap">/300</span>
+    </div>
+    <div class="farm-res-item">
+      <span>🔩</span>
+      <span class="farm-res-val" id="hud-metal">0</span>
+      <span class="farm-res-cap" id="hud-metal-cap">/200</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN LAYOUT ─────────────────────────────────────────────────────── -->
+<div id="layout">
+  <aside id="left-sidebar">
+    <button id="sidebar-close" title="Kapat">✕</button>
+    <div id="village-panel-content">
+      <div class="sidebar-placeholder">
+        <p class="ph-icon">🗺️</p>
+        <p class="ph-text">Haritadaki bir köye tıkla</p>
+      </div>
+    </div>
+  </aside>
+
+  <div id="map-container">
+    <div id="map-world"></div>
+    <div id="map-hint">Kaydır: sürükle</div>
+  </div>
+
+  <aside id="right-sidebar">
+    <div class="sidebar-header">⚔️ Savaş Merkezi</div>
+    <div id="battle-log-entries">
+      <p class="log-empty">Henüz olay yok...</p>
+    </div>
+  </aside>
+</div>
+
+<!-- ── NOTIFICATION ────────────────────────────────────────────────────── -->
+<div id="notification"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════════════════ -->
+
+<!-- Login (first launch / no session) -->
+<div id="modal-login" class="modal-backdrop">
+  <div class="modal-box modal-login-box">
+    <div class="modal-glow-top"></div>
+    <div class="login-logo">✦ GEMİ ✦</div>
+    <p class="login-tagline">Kozmik krallığını kur</p>
+    <button class="login-btn login-btn-google" id="login-google">
+      <span class="login-btn-icon">🇬</span> Google ile Giriş Yap
+    </button>
+    <button class="login-btn login-btn-guest" id="login-guest">
+      🎮 Misafir Olarak Oyna
+    </button>
+    <p class="login-note" id="login-status">
+      Google ile giriş yaparsan ilerlemen tüm cihazlarda senkronize olur.
+    </p>
+  </div>
+</div>
+
+<!-- Kingdom Name (first launch) -->
+<div id="modal-kingdom" class="modal-backdrop">
+  <div class="modal-box modal-kingdom-box">
+    <div class="modal-glow-top"></div>
+    <div class="modal-star-title">✦ GEMİ ✦</div>
+    <h2 class="modal-title">Krallığını Kur</h2>
+    <p class="modal-sub">Kozmik dünyada adın ne olacak?</p>
+    <div class="kingdom-name-row">
+      <input id="kingdom-name-input" class="modal-input" type="text"
+             placeholder="İsmin" maxlength="20" autocomplete="off" />
+      <span class="kingdom-suffix">'s Kingdom</span>
+    </div>
+    <p class="kingdom-name-preview" id="kingdom-preview">— —</p>
+    <button class="modal-btn-primary" id="kingdom-confirm-btn">Krallığı Kur ✦</button>
+  </div>
+</div>
+
+<!-- Tutorial -->
+<div id="modal-tutorial" class="modal-backdrop">
+  <div class="modal-box modal-tutorial-box">
+    <div class="tutorial-step-indicator" id="tutorial-indicator">1 / 6</div>
+    <div class="tutorial-icon" id="tutorial-icon">✦</div>
+    <h2 class="modal-title" id="tutorial-title">Başlık</h2>
+    <p class="modal-sub tutorial-text" id="tutorial-text">Açıklama</p>
+    <div class="tutorial-dots" id="tutorial-dots"></div>
+    <div class="tutorial-nav">
+      <button class="modal-btn-secondary" id="tutorial-prev-btn">← Geri</button>
+      <button class="modal-btn-primary"   id="tutorial-next-btn">İleri →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat -->
+<div id="modal-chat" class="modal-backdrop">
+  <div class="modal-box modal-chat-box">
+    <div class="modal-header">
+      <span class="modal-header-title">💬 Global Sohbet</span>
+      <span class="modal-badge" id="chat-online">🟢 …</span>
+      <button class="modal-close" data-close="modal-chat">✕</button>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" class="modal-input chat-input-field"
+             type="text" placeholder="Mesajını yaz..." maxlength="200" />
+      <button class="modal-btn-primary chat-send-btn" id="chat-send-btn">Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div id="modal-leaderboard" class="modal-backdrop">
+  <div class="modal-box modal-lb-box">
+    <div class="modal-header">
+      <span class="modal-header-title">🏆 Krallık Sıralaması</span>
+      <span class="modal-badge">Simüle</span>
+      <button class="modal-close" data-close="modal-leaderboard">✕</button>
+    </div>
+    <div id="lb-table" class="lb-table"></div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div id="modal-quests" class="modal-backdrop">
+  <div class="modal-box modal-quests-box">
+    <div class="modal-header">
+      <span class="modal-header-title">🎯 Görevler</span>
+      <button class="modal-close" data-close="modal-quests">✕</button>
+    </div>
+    <div class="quest-tabs">
+      <button class="quest-tab active" data-qtab="daily">📅 Günlük</button>
+      <button class="quest-tab" data-qtab="weekly">📆 Haftalık</button>
+    </div>
+    <div class="quest-pane" id="quest-daily"></div>
+    <div class="quest-pane hidden" id="quest-weekly"></div>
+    <p class="quest-reset-label" id="quest-reset-label"></p>
+  </div>
+</div>
+
+<div id="modal-settings" class="modal-backdrop">
+  <div class="modal-box modal-settings-box">
+    <div class="modal-header">
+      <span class="modal-header-title">⚙️ Ayarlar</span>
+      <button class="modal-close" data-close="modal-settings">✕</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Krallık Adı</div>
+      <div class="kingdom-name-row">
+        <input id="settings-name-input" class="modal-input" type="text"
+               placeholder="İsmin" maxlength="20" />
+        <span class="kingdom-suffix">'s Kingdom</span>
+      </div>
+      <button class="modal-btn-primary settings-save-name" id="settings-save-name">Kaydet</button>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Ses</div>
+      <div class="settings-row">
+        <span class="settings-row-label">🎵 Ambient Müzik</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="music-toggle" />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">🔊 Ses Efektleri</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="sfx-toggle" checked />
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Oyun</div>
+      <div class="settings-row">
+        <span class="settings-row-label">💾 Otomatik Kayıt (30s)</span>
+        <span class="settings-val-static">Aktif</span>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">🌙 Çevrimdışı Üretim</span>
+        <span class="settings-val-static">Aktif (maks. 24s)</span>
+      </div>
+    </div>
+
+    <div class="settings-section settings-danger">
+      <div class="settings-label danger-label">Tehlike Bölgesi</div>
+      <button class="modal-btn-danger" id="settings-reset-btn">🗑️ Kayıdı Sil (Sıfırla)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Boss Engage Modal (replaces window.confirm) -->
+<div id="modal-boss" class="modal-backdrop">
+  <div class="modal-box modal-boss-box">
+    <div class="boss-modal-img-wrap">
+      <img id="boss-modal-img" src="" alt="" />
+    </div>
+    <h2 class="modal-title" id="boss-modal-name">Boss Adı</h2>
+    <p class="boss-modal-lore" id="boss-modal-lore">Lore metni</p>
+    <div class="boss-modal-stats">
+      <div class="bstat"><span class="bstat-label">Boss HP</span><span class="bstat-val" id="boss-modal-hp">—</span></div>
+      <div class="bstat"><span class="bstat-label">Ordun</span><span class="bstat-val" id="boss-modal-army">—</span></div>
+    </div>
+    <p class="boss-modal-send-label">Kaç asker gönderilsin?</p>
+    <div class="boss-send-row">
+      <input type="range" id="boss-send-slider" min="1" max="50" value="25" class="boss-slider" />
+      <span class="boss-send-val" id="boss-send-val">25</span>
+    </div>
+    <div class="tutorial-nav">
+      <button class="modal-btn-secondary" id="boss-cancel-btn">Vazgeç</button>
+      <button class="modal-btn-primary"   id="boss-engage-btn">⚔️ Savaşa Gönder</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { Game } from './js/core.js';
+  window.addEventListener('DOMContentLoaded', () => Game.init());
+</script>
+</body>
+</html>
