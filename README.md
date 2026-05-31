@@ -5,7 +5,7 @@ Pannable harita üzerinde köyler kurup, ordu eğitip, Güneş Tozu toplayan cos
 ## 🎮 Oyna
 
 Oyun tamamen tarayıcıda çalışır — kurulum gerekmez.
-**[Buradan oyna →](https://KULLANICI-ADIN.github.io/gemi/)**
+**[Buradan oyna →](https://wusdo.github.io/gemi/)**
 
 ## ✨ Özellikler
 
