@@ -629,7 +629,7 @@ export const Game = {
         return `<div class="chat-msg${isMe ? ' player-msg' : ''}">
           <div class="chat-msg-head">
             <span class="chat-from">${isMe ? '👑 ' : ''}${this._esc(m.name)}</span>
-            <span class="chat-time">${this._fmtChatTime(m.ts)}</span>
+            <span class="chat-time">${this._fmtChatTime(m.ts, m.createdAt)}</span>
           </div>
           <span class="chat-text">${this._esc(m.text)}</span>
         </div>`;
@@ -651,9 +651,11 @@ export const Game = {
     el.textContent = `🟢 ${users.length} oyuncu çevrimiçi`;
   },
 
-  _fmtChatTime(ts) {
-    if (!ts) return '';
-    const ms = ts.toMillis ? ts.toMillis() : (ts.seconds ? ts.seconds * 1000 : 0);
+  _fmtChatTime(ts, fallbackMs) {
+    let ms = 0;
+    if (ts?.toMillis)      ms = ts.toMillis();
+    else if (ts?.seconds)  ms = ts.seconds * 1000;
+    if (!ms && fallbackMs) ms = fallbackMs;   // serverTimestamp henüz gelmediyse client zamanı
     if (!ms) return '';
     const d   = new Date(ms);
     const pad = n => String(n).padStart(2, '0');

@@ -182,7 +182,8 @@ export async function sendChatMessage(name, text) {
     const { collection, addDoc, serverTimestamp } = await _FS();
     await addDoc(collection(_db, 'chats', 'global', 'messages'), {
       uid: _uid, name, text,
-      ts: serverTimestamp(),
+      ts:        serverTimestamp(),
+      createdAt: Date.now(),   // client-side: hemen mevcut, sıralama/filtre için güvenilir
     });
   } catch (e) { console.warn('[Cloud] Chat send failed:', e.message); }
 }
@@ -194,20 +195,20 @@ export function subscribeChat(callback) {
   _FS().then(({ collection, query, orderBy, limit, onSnapshot }) => {
     const q = query(
       collection(_db, 'chats', 'global', 'messages'),
-      orderBy('ts', 'desc'),
+      orderBy('createdAt', 'desc'),
       limit(60)
     );
     const cutoff = Date.now() - 48 * 60 * 60_000;
-    _unsubChat = onSnapshot(q, snap => {
-      const msgs = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(m => {
-          const t = m.ts?.toMillis ? m.ts.toMillis() : (m.ts?.seconds * 1000 ?? 0);
-          return t > cutoff;
-        })
-        .reverse();
-      callback(msgs);
-    });
+    _unsubChat = onSnapshot(q,
+      snap => {
+        const msgs = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(m => (m.createdAt || 0) > cutoff)
+          .reverse();
+        callback(msgs);
+      },
+      err => console.error('[Cloud] Chat listener error:', err.code, err.message)
+    );
   }).catch(e => console.warn('[Cloud] Chat subscribe failed:', e.message));
 }
 
